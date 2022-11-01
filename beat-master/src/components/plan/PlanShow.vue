@@ -1,0 +1,144 @@
+<template>
+  <div>
+    <div class="train_plan" v-for="(item, index) in planData" :key="index">
+      <div class="plan_picture" @click="get_planId(item.planId)">
+        <img
+          class="plan_picture_main"
+          :src="require('../../img/plan/' + item.img_url + '.jpg')"
+          height="151"
+          width="276"
+        />
+      </div>
+      <div class="plan_intro">
+        <p class="name">{{ item.name }}</p>
+        <p class="plan_skip">{{ item.slogan }}</p>
+        <p>
+          <span>课时：{{ item.week }}周</span
+          ><span>天/周：{{ item.day_everyweek }}天</span>
+        </p>
+        <div class="frequency">
+          强度：
+          <img
+            class="full_water"
+            v-for="i in item.grade_type"
+            src="../../img/满水滴.png"
+            height="16"
+            width="21"
+          />
+          <img
+            v-for="i in 5 - item.grade_type"
+            src="../../img/水滴.png"
+            height="15"
+            width="20"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { plan } from "../../network/action";
+export default {
+  name: "PlanShow",
+  data() {
+    return {
+      planData: [],
+      Arr: []
+    };
+  },
+  computed: {
+    plan() {
+      return this.$store.state.plan;
+    }
+  },
+  watch: {
+    plan: function() {
+      this.planData = this.$store.state.plan;
+    }
+  },
+  methods: {
+    get_planId(id) {
+      console.log(id);
+      this.$router.push("/plandetail?id=" + id);
+      for (let i of this.planData) {
+        if (i.planId == id) {
+          this.Arr.push(i);
+        }
+      }
+      console.log(this.Arr);
+      window.sessionStorage.setItem("arr", JSON.stringify(this.Arr));
+    }
+  },
+  mounted() {
+    plan().then(res => {
+      // console.log(res);
+      this.planData = res.data;
+    });
+  }
+};
+</script>
+
+<style scoped>
+a {
+  color: black;
+}
+.train_plan {
+  padding-left: 10px;
+  background: white;
+  width: 590px;
+  height: 160px;
+  margin-bottom: 1px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: 0.3s;
+}
+.train_plan:hover {
+  box-shadow: 0px 0px 10px gray;
+}
+.train_plan .plan_picture {
+  margin-top: 4px;
+  width: 290px;
+  height: 151px;
+  float: left;
+  margin-right: 10px;
+  overflow: hidden;
+}
+.train_plan .plan_picture img {
+  width: 100%;
+}
+.train_plan .plan_picture img:hover {
+  transition: 1s;
+  transform: scale(1.1);
+}
+.train_plan .plan_intro {
+  width: 230px;
+  height: 160px;
+  float: left;
+}
+
+.train_plan .plan_intro .name {
+  margin-top: 4px;
+  font-size: 20px;
+  width: 300px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.plan_skip {
+  width: 250px;
+  font-size: 13px;
+  height: 80px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.plan_intro p span {
+  margin-right: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.full_water {
+  position: relative;
+  top: 1px;
+}
+.frequency img {
+  box-sizing: border-box;
+}
+</style>
